@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:vtb_hack/core/constants.dart';
 import 'package:vtb_hack/data/enum.dart';
@@ -75,15 +76,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return (!loading)
-        ? const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            routes: {
-              // '/auth_sms_page': (context) => const AuthSmsPage(),
-            },
-            home: MapScreen(),
-          )
-        : const SizedBox.shrink();
+    return MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider(create: (context) => getIt),
+        ],
+        child: (!loading)
+            ? const MaterialApp(
+                debugShowCheckedModeBanner: false,
+                routes: {
+                  // '/auth_sms_page': (context) => const AuthSmsPage(),
+                },
+                home: MapScreen(),
+              )
+            : const SizedBox.shrink());
   }
 
   Future<bool> init(StreamController<GlobalEvents> gs) async {
