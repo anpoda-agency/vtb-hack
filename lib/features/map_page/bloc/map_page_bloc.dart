@@ -32,7 +32,8 @@ class MapPageBloc extends Bloc<MapPageEvent, MapPageState> {
   mapPageLoadDepartments(MapPageLoadDepartments event, emit) async {
     var request = state.pageState.request.copyWith(latitude: event.lat, longitude: event.long);
     var res = await mapRepository.getDepartments(request: request);
-    emit(MapPageUp(state.pageState.copyWith(onAwait: false, response: res, request: request)));
+    emit(MapPageUpdateMap(
+        state.pageState.copyWith(onAwait: false, response: res, request: request)));
   }
 
   mapPageLoadUpdateFilter(MapPageLoadUpdateFilter event, emit) async {
