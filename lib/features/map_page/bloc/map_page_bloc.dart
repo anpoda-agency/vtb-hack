@@ -14,21 +14,29 @@ class MapPageBloc extends Bloc<MapPageEvent, MapPageState> {
     required this.mapRepository,
   }) : super(MapPageInitial(pageState)) {
     on<MapPageInit>(mapPageInit);
+    on<MapPageLoadDepartments>(mapPageLoadDepartments);
     on<MapPageMsgErr>(mapPageMsgErr);
+    on<MapPageLoadUpdateFilter>(mapPageLoadUpdateFilter);
     add(MapPageInit());
   }
 
   mapPageInit(MapPageInit event, emit) async {
-    emit(MapPageUp(state.pageState.copyWith(onAwait: true)));
     var startRequest = const DepartmentRequest(
-        longitude: 51.529644,
-        latitude: 46.051234,
-        radius: 150,
-        service: [1, 2, 3],
-        workload: 0,
-        accountWorkload: false);
-    var res = await mapRepository.getDepartments(request: startRequest);
-    emit(MapPageUp(state.pageState.copyWith(onAwait: false, response: res)));
+      radius: 50,
+      service: [0],
+      accountWorkload: false,
+    );
+    emit(MapPageUp(state.pageState.copyWith(request: startRequest)));
+  }
+
+  mapPageLoadDepartments(MapPageLoadDepartments event, emit) async {
+    var request = state.pageState.request.copyWith(latitude: event.lat, longitude: event.long);
+    var res = await mapRepository.getDepartments(request: request);
+    emit(MapPageUp(state.pageState.copyWith(onAwait: false, response: res, request: request)));
+  }
+
+  mapPageLoadUpdateFilter(MapPageLoadUpdateFilter event, emit) async {
+    emit(MapPageUp(state.pageState.copyWith(onAwait: true, request: event.value)));
   }
 
   mapPageMsgErr(MapPageMsgErr event, emit) async {
