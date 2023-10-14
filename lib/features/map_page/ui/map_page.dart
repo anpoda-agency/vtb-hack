@@ -26,11 +26,11 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final MapObjectId mapObjectId = const MapObjectId('map_object_collection');
   final mapControllerCompleter = Completer<YandexMapController>();
-  YandexMapController? _controller;
+  YandexMapController? controller;
   Timer? _debounce;
   List<MapObject> mapObjects = [];
   TextEditingController textEditingController = TextEditingController();
-  FocusNode _focusNode = FocusNode();
+  final FocusNode _focusNode = FocusNode();
 
   bool credit = false;
   bool card = false;
@@ -78,7 +78,7 @@ class _MapScreenState extends State<MapScreen> {
                     onMapCreated: (yandexMapController) async {
                       mapControllerCompleter.complete(yandexMapController);
                       setState(() {
-                        _controller = yandexMapController;
+                        controller = yandexMapController;
                       });
                       await _initPermission().then((value) => context
                           .read<MapPageBloc>()
