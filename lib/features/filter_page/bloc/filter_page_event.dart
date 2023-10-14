@@ -19,6 +19,8 @@ class FilterPageCheckFreeDepartments extends FilterPageEvent {}
 
 class FilterPageSubmit extends FilterPageEvent {}
 
+class FilterPageClear extends FilterPageEvent {}
+
 class FilterPageMsgErr extends FilterPageEvent {
   final String msg;
   FilterPageMsgErr(this.msg);

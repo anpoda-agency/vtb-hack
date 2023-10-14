@@ -41,27 +41,58 @@ class FilterPage extends StatelessWidget {
             backgroundColor: const Color(0xFFF3F7FA),
             bottomNavigationBar: Padding(
               padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                height: 48,
-                child: ElevatedButton(
-                    onPressed: () => context.read<FilterPageBloc>().add(FilterPageSubmit()),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0184FE)),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                        onPressed: () => context.read<FilterPageBloc>().add(FilterPageSubmit()),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(const Color(0xFF0184FE)),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    child: const Center(
-                        child: Text(
-                      'Применить',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ))),
+                        child: const Center(
+                            child: Text(
+                          'Применить',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ))),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  SizedBox(
+                    height: 48,
+                    child: ElevatedButton(
+                        onPressed: () => context.read<FilterPageBloc>().add(FilterPageClear()),
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                          shape: MaterialStateProperty.all(
+                            RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                side: const BorderSide(color: Color(0xFF0184FE), width: 1.5)),
+                          ),
+                        ),
+                        child: const Center(
+                            child: Text(
+                          'Сбросить',
+                          style: TextStyle(
+                            color: Color(0xFF0184FE),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ))),
+                  ),
+                ],
               ),
             ),
             body: Padding(

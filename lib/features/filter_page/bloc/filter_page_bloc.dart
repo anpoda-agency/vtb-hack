@@ -18,6 +18,7 @@ class FilterPageBloc extends Bloc<FilterPageEvent, FilterPageState> {
     on<FilterPageChangeRadius>(filterPageChangeRadius);
     on<FilterPageCheckFreeDepartments>(filterPageCheckFreeDepartments);
     on<FilterPageSubmit>(filterPageSubmit);
+    on<FilterPageClear>(filterPageClear);
     add(FilterPageInit());
   }
 
@@ -71,6 +72,18 @@ class FilterPageBloc extends Bloc<FilterPageEvent, FilterPageState> {
         radius: state.pageState.sliderValue.toInt(),
         accountWorkload: state.pageState.freeDepartments);
     emit(FilterPageAllowedToPop(state.pageState.copyWith(request: request)));
+  }
+
+  filterPageClear(FilterPageClear event, emit) async {
+    var startRequest = DepartmentRequest(
+      radius: 50,
+      service: [0],
+      accountWorkload: false,
+      latitude: state.pageState.request.latitude,
+      longitude: state.pageState.request.longitude,
+    );
+    print(startRequest.toJson());
+    emit(FilterPageAllowedToPop(state.pageState.copyWith(request: startRequest)));
   }
 
   filterPageMsgErr(FilterPageMsgErr event, emit) async {
