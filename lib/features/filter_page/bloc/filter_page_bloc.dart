@@ -63,6 +63,9 @@ class FilterPageBloc extends Bloc<FilterPageEvent, FilterPageState> {
     if (state.pageState.creditCheck) {
       listServices.add(3);
     }
+    if (listServices.isEmpty) {
+      listServices.add(0);
+    }
     var request = state.pageState.request.copyWith(
         service: listServices,
         radius: state.pageState.sliderValue.toInt(),
