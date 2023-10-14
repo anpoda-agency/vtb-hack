@@ -10,6 +10,10 @@ class MapPageInitial extends MapPageState {
   const MapPageInitial(PageState pageState) : super(pageState);
 }
 
+class MapPageUpdateMap extends MapPageState {
+  const MapPageUpdateMap(PageState pageState) : super(pageState);
+}
+
 class MapPageUp extends MapPageState {
   const MapPageUp(PageState pageState) : super(pageState);
 }

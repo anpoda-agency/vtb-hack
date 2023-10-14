@@ -49,7 +49,11 @@ class _MapScreenState extends State<MapScreen> {
         pageState: const PageState(),
       ),
       child: BlocConsumer<MapPageBloc, MapPageState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is MapPageUpdateMap) {
+            drawPlacemarks(state.pageState);
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             extendBodyBehindAppBar: true,
