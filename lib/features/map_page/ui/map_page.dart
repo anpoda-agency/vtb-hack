@@ -238,7 +238,7 @@ class _MapScreenState extends State<MapScreen> {
                                                             ),
                                                           ),
                                                         const SizedBox(
-                                                          height: 20,
+                                                          height: 30,
                                                         ),
                                                         Row(
                                                           children: [
@@ -331,6 +331,7 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                         InkWell(
                           onTap: () async {
+                            _focusNode.unfocus();
                             DepartmentRequest? res = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -473,7 +474,7 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                       ),
                     const SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                     Row(
                       children: [
