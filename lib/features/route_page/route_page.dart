@@ -19,7 +19,7 @@ class SessionState extends State<SessionPage> {
   late final List<MapObject> mapObjects = [widget.startPlacemark, widget.endPlacemark];
 
   final List<BicycleSessionResult> results = [];
-  bool _progress = true;
+  bool progress = true;
 
   @override
   void initState() {
@@ -89,14 +89,6 @@ class SessionState extends State<SessionPage> {
     );
   }
 
-  Future<void> _cancel() async {
-    await widget.session.cancel();
-
-    setState(() {
-      _progress = false;
-    });
-  }
-
   Future<void> _close() async {
     await widget.session.close();
   }
@@ -107,7 +99,7 @@ class SessionState extends State<SessionPage> {
 
   Future<void> _handleResult(BicycleSessionResult result) async {
     setState(() {
-      _progress = false;
+      progress = false;
     });
 
     if (result.error != null) {
