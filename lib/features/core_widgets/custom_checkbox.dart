@@ -13,7 +13,7 @@ class CustomCheckBox extends StatelessWidget {
 
   final bool value;
   final EdgeInsetsGeometry? padding;
-  final Function() onTap;
+  final void Function() onTap;
   final String text;
 
   @override

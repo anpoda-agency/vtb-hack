@@ -257,14 +257,69 @@ class _MapScreenState extends State<MapScreen> {
                                                         SizedBox(
                                                           height: 48,
                                                           child: ElevatedButton(
-                                                              onPressed: () {
+                                                              onPressed: () async {
+                                                                PlacemarkMapObject startPlacemark =
+                                                                    PlacemarkMapObject(
+                                                                  opacity: 1,
+                                                                  mapId: const MapObjectId(
+                                                                      'start_placemark'),
+                                                                  point: Point(
+                                                                      latitude: state.pageState
+                                                                          .request.latitude,
+                                                                      longitude: state.pageState
+                                                                          .request.longitude),
+                                                                  icon: PlacemarkIcon.single(
+                                                                      PlacemarkIconStyle(
+                                                                          scale: 2,
+                                                                          image: BitmapDescriptor
+                                                                              .fromAssetImage(
+                                                                                  '${AppConstants.icons}placemark_icon.png'))),
+                                                                );
+                                                                PlacemarkMapObject endPlacemark =
+                                                                    PlacemarkMapObject(
+                                                                        opacity: 1,
+                                                                        mapId: const MapObjectId(
+                                                                            'end_placemark'),
+                                                                        point: Point(
+                                                                            latitude: e.latitude,
+                                                                            longitude: e.longitude),
+                                                                        icon: PlacemarkIcon.single(
+                                                                            PlacemarkIconStyle(
+                                                                                scale: 2,
+                                                                                image: BitmapDescriptor
+                                                                                    .fromAssetImage(
+                                                                                        '${AppConstants.icons}placemark_icon.png'))));
                                                                 Navigator.of(context).pop();
-                                                                Navigator.push(
+                                                                var resultWithSession =
+                                                                    YandexBicycle.requestRoutes(
+                                                                        bicycleVehicleType:
+                                                                            BicycleVehicleType
+                                                                                .bicycle,
+                                                                        points: [
+                                                                      RequestPoint(
+                                                                          point:
+                                                                              startPlacemark.point,
+                                                                          requestPointType:
+                                                                              RequestPointType
+                                                                                  .wayPoint),
+                                                                      RequestPoint(
+                                                                          point: endPlacemark.point,
+                                                                          requestPointType:
+                                                                              RequestPointType
+                                                                                  .wayPoint),
+                                                                    ]);
+                                                                await Navigator.push(
                                                                     context,
                                                                     MaterialPageRoute(
                                                                         builder: (BuildContext
                                                                                 context) =>
-                                                                            const BicyclePage()));
+                                                                            SessionPage(
+                                                                                startPlacemark,
+                                                                                endPlacemark,
+                                                                                resultWithSession
+                                                                                    .session,
+                                                                                resultWithSession
+                                                                                    .result)));
                                                               },
                                                               style: ButtonStyle(
                                                                 backgroundColor:
@@ -492,12 +547,45 @@ class _MapScreenState extends State<MapScreen> {
                     SizedBox(
                       height: 48,
                       child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            PlacemarkMapObject startPlacemark = PlacemarkMapObject(
+                              opacity: 1,
+                              mapId: const MapObjectId('start_placemark'),
+                              point: Point(
+                                  latitude: pageState.request.latitude,
+                                  longitude: pageState.request.longitude),
+                              icon: PlacemarkIcon.single(PlacemarkIconStyle(
+                                  scale: 2,
+                                  image: BitmapDescriptor.fromAssetImage(
+                                      '${AppConstants.icons}placemark_icon.png'))),
+                            );
+                            PlacemarkMapObject endPlacemark = PlacemarkMapObject(
+                                opacity: 1,
+                                mapId: const MapObjectId('end_placemark'),
+                                point: Point(latitude: i.latitude, longitude: i.longitude),
+                                icon: PlacemarkIcon.single(PlacemarkIconStyle(
+                                    scale: 2,
+                                    image: BitmapDescriptor.fromAssetImage(
+                                        '${AppConstants.icons}placemark_icon.png'))));
                             Navigator.of(context).pop();
-                            Navigator.push(
+                            var resultWithSession = YandexBicycle.requestRoutes(
+                                bicycleVehicleType: BicycleVehicleType.bicycle,
+                                points: [
+                                  RequestPoint(
+                                      point: startPlacemark.point,
+                                      requestPointType: RequestPointType.wayPoint),
+                                  RequestPoint(
+                                      point: endPlacemark.point,
+                                      requestPointType: RequestPointType.wayPoint),
+                                ]);
+                            await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (BuildContext context) => const BicyclePage()));
+                                    builder: (BuildContext context) => SessionPage(
+                                        startPlacemark,
+                                        endPlacemark,
+                                        resultWithSession.session,
+                                        resultWithSession.result)));
                           },
                           style: ButtonStyle(
                             backgroundColor:

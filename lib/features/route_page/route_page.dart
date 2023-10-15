@@ -1,104 +1,21 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:vtb_hack/features/route_page/control_widget.dart';
-import 'package:vtb_hack/features/route_page/map_page_for_route.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-class BicyclePage extends MapPageForRoute {
-  const BicyclePage({Key? key}) : super('Bicycle example', key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return _BicycleExample();
-  }
-}
-
-class _BicycleExample extends StatefulWidget {
-  @override
-  _BicycleExampleState createState() => _BicycleExampleState();
-}
-
-class _BicycleExampleState extends State<_BicycleExample> {
-  late final List<MapObject> mapObjects = [startPlacemark, stopByPlacemark, endPlacemark];
-  final PlacemarkMapObject startPlacemark = PlacemarkMapObject(
-    mapId: const MapObjectId('start_placemark'),
-    point: const Point(latitude: 55.7558, longitude: 37.6173),
-    icon: PlacemarkIcon.single(
-        PlacemarkIconStyle(image: BitmapDescriptor.fromAssetImage('lib/assets/route_start.png'))),
-  );
-  final PlacemarkMapObject stopByPlacemark = PlacemarkMapObject(
-    mapId: const MapObjectId('stop_by_placemark'),
-    point: const Point(latitude: 55.755173, longitude: 37.619097),
-    icon: PlacemarkIcon.single(
-        PlacemarkIconStyle(image: BitmapDescriptor.fromAssetImage('lib/assets/route_stop_by.png'))),
-  );
-  final PlacemarkMapObject endPlacemark = PlacemarkMapObject(
-      mapId: const MapObjectId('end_placemark'),
-      point: const Point(latitude: 55.7558, longitude: 37.62),
-      icon: PlacemarkIcon.single(
-          PlacemarkIconStyle(image: BitmapDescriptor.fromAssetImage('lib/assets/route_end.png'))));
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Expanded(
-              child: YandexMap(
-            mapObjects: mapObjects,
-            onMapCreated: (YandexMapController yandexMapController) async {
-              final boundingBox =
-                  BoundingBox(northEast: startPlacemark.point, southWest: endPlacemark.point);
-
-              await yandexMapController.moveCamera(CameraUpdate.newBounds(boundingBox));
-              await yandexMapController.moveCamera(CameraUpdate.zoomOut());
-            },
-          )),
-          const SizedBox(height: 20),
-          Expanded(
-              child: SingleChildScrollView(
-                  child: Column(children: [
-            ControlButton(
-              onPressed: _requestRoutes,
-              title: 'Build route',
-            ),
-          ])))
-        ]);
-  }
-
-  Future<void> _requestRoutes() async {
-    print('Points: ${startPlacemark.point},${stopByPlacemark.point},${endPlacemark.point}');
-
-    var resultWithSession =
-        YandexBicycle.requestRoutes(bicycleVehicleType: BicycleVehicleType.bicycle, points: [
-      RequestPoint(point: startPlacemark.point, requestPointType: RequestPointType.wayPoint),
-      RequestPoint(point: stopByPlacemark.point, requestPointType: RequestPointType.viaPoint),
-      RequestPoint(point: endPlacemark.point, requestPointType: RequestPointType.wayPoint),
-    ]);
-
-    await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => _SessionPage(startPlacemark, endPlacemark,
-                resultWithSession.session, resultWithSession.result)));
-  }
-}
-
-class _SessionPage extends StatefulWidget {
+class SessionPage extends StatefulWidget {
   final Future<BicycleSessionResult> result;
   final BicycleSession session;
   final PlacemarkMapObject startPlacemark;
   final PlacemarkMapObject endPlacemark;
 
-  const _SessionPage(this.startPlacemark, this.endPlacemark, this.session, this.result);
+  const SessionPage(this.startPlacemark, this.endPlacemark, this.session, this.result, {super.key});
 
   @override
-  _SessionState createState() => _SessionState();
+  SessionState createState() => SessionState();
 }
 
-class _SessionState extends State<_SessionPage> {
+class SessionState extends State<SessionPage> {
   late final List<MapObject> mapObjects = [widget.startPlacemark, widget.endPlacemark];
 
   final List<BicycleSessionResult> results = [];
@@ -121,87 +38,55 @@ class _SessionState extends State<_SessionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Bicycle ${widget.session.id}')),
-        body: Container(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 300,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        YandexMap(
-                          mapObjects: mapObjects,
-                          onMapCreated: (YandexMapController yandexMapController) async {
-                            final boundingBox = BoundingBox(
-                                northEast: widget.startPlacemark.point,
-                                southWest: widget.endPlacemark.point);
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            YandexMap(
+              mapObjects: mapObjects,
+              onMapCreated: (YandexMapController yandexMapController) async {
+                final boundingBox = BoundingBox(
+                    northEast: widget.startPlacemark.point, southWest: widget.endPlacemark.point);
 
-                            await yandexMapController
-                                .moveCamera(CameraUpdate.newBounds(boundingBox));
-                            await yandexMapController.moveCamera(CameraUpdate.zoomOut());
-                          },
-                        ),
-                      ],
-                    ),
+                await yandexMapController.moveCamera(CameraUpdate.newBounds(boundingBox));
+                await yandexMapController.moveCamera(CameraUpdate.zoomOut());
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: InkWell(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(22),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.shade400,
+                        blurRadius: 10.0,
+                        offset: const Offset(5.0, 5.0),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                      child: SingleChildScrollView(
-                          child: Column(children: <Widget>[
-                    SizedBox(
-                        height: 60,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            !_progress
-                                ? Container()
-                                : TextButton.icon(
-                                    icon: const CircularProgressIndicator(),
-                                    label: const Text('Cancel'),
-                                    onPressed: _cancel)
-                          ],
-                        )),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Flexible(
-                          child: Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: _getList(),
-                              )),
-                        ),
-                      ],
-                    ),
-                  ])))
-                ])));
-  }
-
-  List<Widget> _getList() {
-    final list = <Widget>[];
-
-    if (results.isEmpty) {
-      list.add((const Text('Nothing found')));
-    }
-
-    for (var r in results) {
-      list.add(Container(height: 20));
-
-      r.routes!.asMap().forEach((i, route) {
-        list.add(Text('Route $i: ${route.weight.time.text}'));
-      });
-
-      list.add(Container(height: 20));
-    }
-
-    return list;
+                  child: const Icon(
+                    Icons.arrow_back,
+                    size: 24,
+                    color: Color(0xFF0184FE),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _cancel() async {
@@ -226,7 +111,6 @@ class _SessionState extends State<_SessionPage> {
     });
 
     if (result.error != null) {
-      print('Error: ${result.error}');
       return;
     }
 
