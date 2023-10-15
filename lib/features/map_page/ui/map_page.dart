@@ -117,10 +117,11 @@ class _MapScreenState extends State<MapScreen> {
                               children: [
                                 Expanded(
                                     child: Padding(
-                                  padding: const EdgeInsets.only(left: 16, bottom: 8),
+                                  padding: const EdgeInsets.only(left: 16, bottom: 2),
                                   child: SearchField<DepartmentResponse>(
                                     focusNode: _focusNode,
                                     searchInputDecoration: const InputDecoration(
+                                      hintText: 'Поиск',
                                       focusedBorder: InputBorder.none,
                                       border: InputBorder.none,
                                     ),
