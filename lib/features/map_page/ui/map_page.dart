@@ -5,9 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
+import 'package:searchfield/searchfield.dart';
 import 'package:vtb_hack/core/constants.dart';
 import 'package:vtb_hack/data/models/local/app_geolocation_model.dart';
 import 'package:vtb_hack/data/models/offers/department_request.dart';
+import 'package:vtb_hack/data/models/offers/department_response.dart';
 import 'package:vtb_hack/data/service/location_service/location_service.dart';
 import 'package:vtb_hack/domain/repository/map_repository.dart';
 import 'package:vtb_hack/features/core_widgets/custom_bottom_sheet.dart';
@@ -56,6 +58,7 @@ class _MapScreenState extends State<MapScreen> {
         },
         builder: (context, state) {
           return Scaffold(
+            resizeToAvoidBottomInset: false,
             extendBodyBehindAppBar: true,
             appBar: AppBar(
               toolbarHeight: 0,
@@ -109,19 +112,206 @@ class _MapScreenState extends State<MapScreen> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
                                     child: Padding(
-                                  padding: const EdgeInsets.only(left: 16),
-                                  child: TextFormField(
-                                    onTapOutside: (event) => _focusNode.unfocus(),
+                                  padding: const EdgeInsets.only(left: 16, bottom: 8),
+                                  child: SearchField<DepartmentResponse>(
                                     focusNode: _focusNode,
-                                    controller: textEditingController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Поиск',
+                                    searchInputDecoration: const InputDecoration(
+                                      focusedBorder: InputBorder.none,
                                       border: InputBorder.none,
                                     ),
+                                    suggestions: state.pageState.response
+                                        .map(
+                                          (e) => SearchFieldListItem<DepartmentResponse>(
+                                            e.department,
+                                            item: e,
+                                            child: InkWell(
+                                              onTap: () => _moveToCurrentLocation(
+                                                      appLatLong: AppLocationModel(
+                                                          lat: e.latitude, long: e.longitude),
+                                                      zoom: 16)
+                                                  .then((value) {
+                                                int full = e.workload.toInt();
+                                                int pure = 5 - full;
+                                                _focusNode.unfocus();
+                                                CustomBottomSheet(
+                                                    context: context,
+                                                    body: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Center(
+                                                          child: Text(e.department,
+                                                              style: const TextStyle(
+                                                                fontSize: 20,
+                                                                fontWeight: FontWeight.w700,
+                                                              )),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 30,
+                                                        ),
+                                                        const Text('Предоставляемые услуги:',
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight: FontWeight.w500,
+                                                            )),
+                                                        if (e.service.contains(1))
+                                                          const Padding(
+                                                            padding:
+                                                                EdgeInsets.only(top: 16, left: 10),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.center,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment.start,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.circle,
+                                                                  color: Color(0xFF0184FE),
+                                                                  size: 12,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 8,
+                                                                ),
+                                                                Text('Оформить карту',
+                                                                    style: TextStyle(
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.w400,
+                                                                    ))
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        if (e.service.contains(2))
+                                                          const Padding(
+                                                            padding:
+                                                                EdgeInsets.only(top: 16, left: 10),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.center,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment.start,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.circle,
+                                                                  color: Color(0xFF0184FE),
+                                                                  size: 12,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 8,
+                                                                ),
+                                                                Text('Открыть ИП',
+                                                                    style: TextStyle(
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.w400,
+                                                                    ))
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        if (e.service.contains(3))
+                                                          const Padding(
+                                                            padding:
+                                                                EdgeInsets.only(top: 16, left: 10),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment.center,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment.start,
+                                                              children: [
+                                                                Icon(
+                                                                  Icons.circle,
+                                                                  color: Color(0xFF0184FE),
+                                                                  size: 12,
+                                                                ),
+                                                                SizedBox(
+                                                                  width: 8,
+                                                                ),
+                                                                Text('Оформить кредит',
+                                                                    style: TextStyle(
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.w400,
+                                                                    ))
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        const SizedBox(
+                                                          height: 20,
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            const Text('Загруженность:',
+                                                                style: TextStyle(
+                                                                  fontSize: 18,
+                                                                  fontWeight: FontWeight.w500,
+                                                                )),
+                                                            calcWorkloadWidget(
+                                                                pure: pure, full: full),
+                                                          ],
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 30,
+                                                        ),
+                                                        SizedBox(
+                                                          height: 48,
+                                                          child: ElevatedButton(
+                                                              onPressed: () {
+                                                                Navigator.of(context).pop();
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (BuildContext
+                                                                                context) =>
+                                                                            const BicyclePage()));
+                                                              },
+                                                              style: ButtonStyle(
+                                                                backgroundColor:
+                                                                    MaterialStateProperty.all<
+                                                                            Color>(
+                                                                        const Color(0xFF0184FE)),
+                                                                shape: MaterialStateProperty.all(
+                                                                  RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(16),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              child: const Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment.spaceBetween,
+                                                                children: [
+                                                                  SizedBox(
+                                                                    width: 22,
+                                                                  ),
+                                                                  Text(
+                                                                    'Построить маршрут',
+                                                                    style: TextStyle(
+                                                                      color: Colors.white,
+                                                                      fontSize: 16,
+                                                                      fontWeight: FontWeight.w500,
+                                                                    ),
+                                                                  ),
+                                                                  Icon(Icons
+                                                                      .directions_walk_rounded),
+                                                                ],
+                                                              )),
+                                                        ),
+                                                      ],
+                                                    )).show();
+                                              }),
+                                              child: Container(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Text(e.department),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
                                   ),
                                 )),
                                 Padding(
@@ -205,6 +395,83 @@ class _MapScreenState extends State<MapScreen> {
                           )),
                     ),
                     const SizedBox(
+                      height: 30,
+                    ),
+                    const Text('Предоставляемые услуги:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        )),
+                    if (i.service.contains(1))
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16, left: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.circle,
+                              color: Color(0xFF0184FE),
+                              size: 12,
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text('Оформить карту',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ))
+                          ],
+                        ),
+                      ),
+                    if (i.service.contains(2))
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16, left: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.circle,
+                              color: Color(0xFF0184FE),
+                              size: 12,
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text('Открыть ИП',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ))
+                          ],
+                        ),
+                      ),
+                    if (i.service.contains(3))
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16, left: 10),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.circle,
+                              color: Color(0xFF0184FE),
+                              size: 12,
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text('Оформить кредит',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                ))
+                          ],
+                        ),
+                      ),
+                    const SizedBox(
                       height: 20,
                     ),
                     Row(
@@ -212,13 +479,13 @@ class _MapScreenState extends State<MapScreen> {
                         const Text('Загруженность:',
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w500,
                             )),
                         calcWorkloadWidget(pure: pure, full: full),
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                     SizedBox(
                       height: 48,
@@ -239,15 +506,23 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                             ),
                           ),
-                          child: const Center(
-                              child: Text(
-                            'Построить маршрут',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ))),
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: 22,
+                              ),
+                              Text(
+                                'Построить маршрут',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Icon(Icons.directions_walk_rounded),
+                            ],
+                          )),
                     ),
                   ],
                 )).show();
@@ -310,13 +585,11 @@ class _MapScreenState extends State<MapScreen> {
     } catch (_) {
       location = defLocation;
     }
-    await _moveToCurrentLocation(location);
+    await _moveToCurrentLocation(appLatLong: location);
     return Point(latitude: location.lat, longitude: location.long);
   }
 
-  Future<void> _moveToCurrentLocation(
-    AppLocationModel appLatLong,
-  ) async {
+  Future<void> _moveToCurrentLocation({required AppLocationModel appLatLong, double? zoom}) async {
     (await mapControllerCompleter.future).moveCamera(
       animation: const MapAnimation(type: MapAnimationType.linear, duration: 1),
       CameraUpdate.newCameraPosition(
@@ -325,7 +598,7 @@ class _MapScreenState extends State<MapScreen> {
             latitude: appLatLong.lat,
             longitude: appLatLong.long,
           ),
-          zoom: 12,
+          zoom: zoom ?? 12,
         ),
       ),
     );

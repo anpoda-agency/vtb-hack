@@ -134,7 +134,7 @@ class FilterPage extends StatelessWidget {
                         CustomCheckBox(
                           value: state.pageState.creditCheck,
                           onTap: () => context.read<FilterPageBloc>().add(FilterPageCheckCredit()),
-                          text: 'Взять кредит',
+                          text: 'Оформить кредит',
                         ),
                       ],
                     ),

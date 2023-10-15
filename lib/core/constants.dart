@@ -9,7 +9,7 @@ abstract class AppConstants {
   static const bool makeCurlClipboard = false;
 
   // base url
-  static const String baseUrl = "http://51.250.7.217:8081";
+  static const String baseUrl = "http://84.201.134.106:8081";
 
   //activation-code-controller urls
   static const String department = "/department";
